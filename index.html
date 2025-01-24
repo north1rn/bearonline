@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление времени в несколько окон</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 10px;
+            width: 100px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #previousRequests {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            display: block;
+        }
+
+        #previousRequests h3 {
+            font-size: 20px;
+            margin: 0;
+            margin-bottom: 10px;
+        }
+
+        #previousRequests ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #previousRequests li {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<div class="container">
+    <div class="title">Левый</div>
+    <input type="time" id="leftTime">
+    <button onclick="addTime('Левый', 'leftTime', 'leftResult')">Убил!</button>
+    <p id="leftResult"></p>
+</div>
+
+<div class="container">
+    <div class="title">Трезубец 1</div>
+    <input type="time" id="trident1Time">
+    <button onclick="addTime('Трезубец 1', 'trident1Time', 'trident1Result')">Убил!</button>
+    <p id="trident1Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Трезубец 2</div>
+    <input type="time" id="trident2Time">
+    <button onclick="addTime('Трезубец 2', 'trident2Time', 'trident2Result')">Убил!</button>
+    <p id="trident2Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Трезубец 3</div>
+    <input type="time" id="trident3Time">
+    <button onclick="addTime('Трезубец 3', 'trident3Time', 'trident3Result')">Убил!</button>
+    <p id="trident3Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Пётр 1</div>
+    <input type="time" id="petro1Time">
+    <button onclick="addTime('Пётр 1', 'petro1Time', 'petro1Result')">ДУбил!</button>
+    <p id="petro1Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Пётр 2</div>
+    <input type="time" id="petro2Time">
+    <button onclick="addTime('Пётр 2', 'petro2Time', 'petro2Result')">Убил!</button>
+    <p id="petro2Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Пётр 3</div>
+    <input type="time" id="petro3Time">
+    <button onclick="addTime('Пётр 3', 'petro3Time', 'petro3Result')">Убил!</button>
+    <p id="petro3Result"></p>
+</div>
+
+<!-- Отдельное окно для отображения предыдущих запросов -->
+<div id="previousRequests">
+    <h3>Предыдущие запросы</h3>
+    <ul id="requestList"></ul>
+</div>
+
+<script>
+    // Массив для хранения всех предыдущих запросов
+    let previousQueries = [];
+
+    function addTime(name, timeInputId, resultId) {
+    const timeInput = document.getElementById(timeInputId).value;
+    if (!timeInput) {
+        alert('Пожалуйста, введите время.');
+        return;
+    }
+
+    let [hours, minutes] = timeInput.split(':').map(Number);
+
+    minutes += 37; // добавляем 37 минут
+    if (minutes >= 60) {
+        minutes -= 60;
+        hours += 1;
+        if (hours >= 24) {
+            hours = 0; // учитываем переход через полночь
+        }
+    }
+
+    const endTime = new Date();
+    endTime.setHours(hours, minutes, 0);
+
+    // Форматируем время для отображения
+    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    const resultElement = document.getElementById(resultId);
+
+    // Отображаем фиксированное время появления
+    resultElement.innerHTML = `<span style="font-weight: bold;">Заспавнится в:</span> ${formattedTime}<br><span id="${resultId}-timer">Обратный отсчет: </span>`;
+    const timerElement = document.getElementById(`${resultId}-timer`);
+    resultElement.style.color = 'green';
+
+    // Таймер для обратного отсчета
+    const timerInterval = setInterval(() => {
+        const now = new Date();
+        const timeLeft = Math.floor((endTime - now) / 1000); // время в секундах
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerElement.textContent = `${name}: Время вышло!`;
+            resultElement.style.color = 'black';
+            return;
+        }
+
+        const minutesLeft = Math.floor(timeLeft / 60);
+        const secondsLeft = timeLeft % 60;
+
+        timerElement.textContent = `Обратный отсчет: ${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+
+        // Изменяем цвет, если осталось <= 10 минут
+        if (minutesLeft < 10) {
+            resultElement.style.color = 'red';
+        }
+    }, 1000);
+
+    // Создаем новый запрос с названием
+    const query = `${name}: Убил в: ${timeInput}, Заспавнится в: ${formattedTime}`;
+    previousQueries.push(query); // Добавляем в массив
+
+    // Обновляем список предыдущих запросов
+    updatePreviousRequests();
+
+    // Сохраняем запросы в локальной памяти
+    localStorage.setItem('previousQueries', JSON.stringify(previousQueries));
+}
+
+function updatePreviousRequests() {
+    const requestList = document.getElementById('requestList');
+    requestList.innerHTML = ''; // Очищаем текущий список
+
+    previousQueries.forEach(query => {
+        const li = document.createElement('li');
+        li.textContent = query; // Добавляем запрос в элемент списка
+        requestList.appendChild(li);
+    });
+}
+
+// Загрузка предыдущих запросов из локальной памяти при загрузке страницы
+window.onload = function() {
+    const savedQueries = localStorage.getItem('previousQueries');
+    if (savedQueries) {
+        previousQueries = JSON.parse(savedQueries);
+        updatePreviousRequests();
+    }
+};
+
+
+</script>
+
+</body>
+</html>
