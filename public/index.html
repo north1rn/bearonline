@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавление времени в несколько окон</title>
     <style>
+        /* Стили остаются такими же, как в предыдущем коде */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -15,7 +16,6 @@
             margin: 0;
             background-color: #f0f0f0;
         }
-
         .container {
             text-align: center;
             background-color: #fff;
@@ -24,7 +24,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin: 10px;
         }
-
         input {
             font-size: 18px;
             padding: 10px;
@@ -33,7 +32,6 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
         button {
             font-size: 16px;
             padding: 10px 20px;
@@ -43,21 +41,17 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #45a049;
         }
-
         p {
             font-size: 18px;
             font-weight: bold;
         }
-
         .title {
             font-size: 20px;
             font-weight: bold;
         }
-
         #previousRequests {
             margin-top: 20px;
             padding: 10px;
@@ -67,13 +61,11 @@
             text-align: center;
             display: block;
         }
-
         #previousRequests h3 {
             font-size: 20px;
             margin: 0;
             margin-bottom: 10px;
         }
-
         #previousRequests ul {
             list-style-type: none;
             padding: 0;
@@ -81,7 +73,6 @@
             max-height: 150px;
             overflow-y: auto;
         }
-
         #previousRequests li {
             margin-bottom: 10px;
             font-size: 16px;
@@ -90,27 +81,19 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
 
 <div class="container">
     <div class="title">Левый</div>
     <input type="time" id="leftTime">
-    <button onclick="addRequestToFirestore('Левый', 'leftTime', 'leftResult')">Убил!</button>
+    <button onclick="addRequestToDatabase('Левый', 'leftTime', 'leftResult')">Убил!</button>
     <p id="leftResult"></p>
 </div>
 
-<div class="container">
-    <div class="title">Трезубец 1</div>
-    <input type="time" id="trident1Time">
-    <button onclick="addRequestToFirestore('Трезубец 1', 'trident1Time', 'trident1Result')">Убил!</button>
-    <p id="trident1Result"></p>
-</div>
+<!-- Добавь остальные контейнеры аналогично -->
 
-<!-- добавь остальные контейнеры аналогично -->
-
-<!-- Отображение предыдущих запросов -->
 <div id="previousRequests">
     <h3>Предыдущие запросы</h3>
     <ul id="requestList"></ul>
@@ -121,8 +104,9 @@
     const firebaseConfig = {
         apiKey: "AIzaSyD_oVQVzH97aShwlBMxCDsAuqaMX266SkQ",
         authDomain: "sobear-97f0f.firebaseapp.com",
+        databaseURL: "https://sobear-97f0f-default-rtdb.firebaseio.com", // Убедись, что добавлен URL для Realtime Database
         projectId: "sobear-97f0f",
-        storageBucket: "sobear-97f0f.firebasestorage.app",
+        storageBucket: "sobear-97f0f.appspot.com",
         messagingSenderId: "370290200994",
         appId: "1:370290200994:web:75c0cf716b421d27c9e2fb",
         measurementId: "G-BKJKNTT7VP"
@@ -130,10 +114,10 @@
 
     // Инициализация Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
+    const db = firebase.database(app); // Инициализируем Realtime Database
 
-    // Функция для добавления времени и запроса в Firestore
-    function addRequestToFirestore(name, timeInputId, resultId) {
+    // Функция для добавления данных в Realtime Database
+    function addRequestToDatabase(name, timeInputId, resultId) {
         const timeInput = document.getElementById(timeInputId).value;
         if (!timeInput) {
             alert('Пожалуйста, введите время.');
@@ -179,30 +163,27 @@
             }
         }, 1000);
 
-        // Сохраняем данные в Firestore
-        db.collection('times').add({
+        // Добавление данных в Realtime Database
+        const newRequestRef = db.ref('requests').push(); // Генерируем уникальный идентификатор
+        newRequestRef.set({
             name: name,
             time: timeInput,
             endTime: formattedTime
         }).then(() => {
-            console.log('Данные добавлены в коллекцию times');
+            console.log('Данные добавлены в Realtime Database');
         }).catch((error) => {
-            console.error('Ошибка при добавлении данных в коллекцию times:', error);
+            console.error('Ошибка при добавлении данных в Realtime Database:', error);
         });
     }
 
-    // Слушаем изменения в Firestore и обновляем отображение
-    db.collection('times').onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-                const { name, time, endTime } = change.doc.data();
-                const query = `${name}: Убил в: ${time}, Заспавнится в: ${endTime}`;
-                const requestList = document.getElementById('requestList');
-                const li = document.createElement('li');
-                li.textContent = query;
-                requestList.appendChild(li);
-            }
-        });
+    // Слушаем изменения в Realtime Database и обновляем отображение
+    db.ref('requests').on('child_added', (snapshot) => {
+        const { name, time, endTime } = snapshot.val();
+        const query = `${name}: Убил в: ${time}, Заспавнится в: ${endTime}`;
+        const requestList = document.getElementById('requestList');
+        const li = document.createElement('li');
+        li.textContent = query;
+        requestList.appendChild(li);
     });
 
 </script>
