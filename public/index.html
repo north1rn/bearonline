@@ -91,60 +91,59 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
 </head>
 <body>
 
 <div class="container">
     <div class="title">Левый</div>
     <input type="time" id="leftTime">
-    <button onclick="addTime('Левый', 'leftTime', 'leftResult')">Убил!</button>
+    <button onclick="addRequestToFirestore('Левый', 'leftTime', 'leftResult')">Убил!</button>
     <p id="leftResult"></p>
 </div>
 
 <div class="container">
     <div class="title">Трезубец 1</div>
     <input type="time" id="trident1Time">
-    <button onclick="addTime('Трезубец 1', 'trident1Time', 'trident1Result')">Убил!</button>
+    <button onclick="addRequestToFirestore('Трезубец 1', 'trident1Time', 'trident1Result')">Убил!</button>
     <p id="trident1Result"></p>
 </div>
 
 <div class="container">
     <div class="title">Трезубец 2</div>
     <input type="time" id="trident2Time">
-    <button onclick="addTime('Трезубец 2', 'trident2Time', 'trident2Result')">Убил!</button>
+    <button onclick="addRequestToFirestore('Трезубец 2', 'trident2Time', 'trident2Result')">Убил!</button>
     <p id="trident2Result"></p>
 </div>
 
 <div class="container">
     <div class="title">Трезубец 3</div>
     <input type="time" id="trident3Time">
-    <button onclick="addTime('Трезубец 3', 'trident3Time', 'trident3Result')">Убил!</button>
+    <button onclick="addRequestToFirestore('Трезубец 3', 'trident3Time', 'trident3Result')">Убил!</button>
     <p id="trident3Result"></p>
 </div>
 
 <div class="container">
     <div class="title">Пётр 1</div>
     <input type="time" id="petro1Time">
-    <button onclick="addTime('Пётр 1', 'petro1Time', 'petro1Result')">ДУбил!</button>
+    <button onclick="addRequestToFirestore('Пётр 1', 'petro1Time', 'petro1Result')">ДУбил!</button>
     <p id="petro1Result"></p>
 </div>
 
 <div class="container">
     <div class="title">Пётр 2</div>
     <input type="time" id="petro2Time">
-    <button onclick="addTime('Пётр 2', 'petro2Time', 'petro2Result')">Убил!</button>
+    <button onclick="addRequestToFirestore('Пётр 2', 'petro2Time', 'petro2Result')">Убил!</button>
     <p id="petro2Result"></p>
 </div>
 
 <div class="container">
     <div class="title">Пётр 3</div>
     <input type="time" id="petro3Time">
-    <button onclick="addTime('Пётр 3', 'petro3Time', 'petro3Result')">Убил!</button>
+    <button onclick="addRequestToFirestore('Пётр 3', 'petro3Time', 'petro3Result')">Убил!</button>
     <p id="petro3Result"></p>
 </div>
 
-<!-- Отдельное окно для отображения предыдущих запросов -->
+<!-- Отображение предыдущих запросов -->
 <div id="previousRequests">
     <h3>Предыдущие запросы</h3>
     <ul id="requestList"></ul>
@@ -169,7 +168,8 @@
     // Массив для хранения всех предыдущих запросов
     let previousQueries = [];
 
-    function addTime(name, timeInputId, resultId) {
+    // Функция для добавления времени и запроса в Firestore
+    function addRequestToFirestore(name, timeInputId, resultId) {
         const timeInput = document.getElementById(timeInputId).value;
         if (!timeInput) {
             alert('Пожалуйста, введите время.');
@@ -230,6 +230,10 @@
             name: name,
             time: timeInput,
             endTime: formattedTime
+        }).then(() => {
+            console.log('Данные добавлены в коллекцию times');
+        }).catch((error) => {
+            console.error('Ошибка при добавлении данных в коллекцию times:', error);
         });
     }
 
