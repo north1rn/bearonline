@@ -1,89 +1,213 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.2.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.2.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.2.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление времени в несколько окон</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
         }
-      });
-    </script>
-  </body>
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 10px;
+            width: 100px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #previousRequests {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            display: block;
+        }
+
+        #previousRequests h3 {
+            font-size: 20px;
+            margin: 0;
+            margin-bottom: 10px;
+        }
+
+        #previousRequests ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #previousRequests li {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<div class="container">
+    <div class="title">Левый</div>
+    <input type="time" id="leftTime">
+    <button onclick="addTime('Левый', 'leftTime', 'leftResult')">Убил!</button>
+    <p id="leftResult"></p>
+</div>
+
+<div class="container">
+    <div class="title">Трезубец 1</div>
+    <input type="time" id="trident1Time">
+    <button onclick="addTime('Трезубец 1', 'trident1Time', 'trident1Result')">Убил!</button>
+    <p id="trident1Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Трезубец 2</div>
+    <input type="time" id="trident2Time">
+    <button onclick="addTime('Трезубец 2', 'trident2Time', 'trident2Result')">Убил!</button>
+    <p id="trident2Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Трезубец 3</div>
+    <input type="time" id="trident3Time">
+    <button onclick="addTime('Трезубец 3', 'trident3Time', 'trident3Result')">Убил!</button>
+    <p id="trident3Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Пётр 1</div>
+    <input type="time" id="petro1Time">
+    <button onclick="addTime('Пётр 1', 'petro1Time', 'petro1Result')">ДУбил!</button>
+    <p id="petro1Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Пётр 2</div>
+    <input type="time" id="petro2Time">
+    <button onclick="addTime('Пётр 2', 'petro2Time', 'petro2Result')">Убил!</button>
+    <p id="petro2Result"></p>
+</div>
+
+<div class="container">
+    <div class="title">Пётр 3</div>
+    <input type="time" id="petro3Time">
+    <button onclick="addTime('Пётр 3', 'petro3Time', 'petro3Result')">Убил!</button>
+    <p id="petro3Result"></p>
+</div>
+
+<!-- Отдельное окно для отображения предыдущих запросов -->
+<div id="previousRequests">
+    <h3>Предыдущие запросы</h3>
+    <ul id="requestList"></ul>
+</div>
+
+<script>
+    // Массив для хранения всех предыдущих запросов
+    let previousQueries = [];
+
+    function addTime(name, timeInputId, resultId) {
+    const timeInput = document.getElementById(timeInputId).value;
+    if (!timeInput) {
+        alert('Пожалуйста, введите время.');
+        return;
+    }
+
+    // Время начала, которое выбрал пользователь
+    let [hours, minutes] = timeInput.split(':').map(Number);
+
+    // Устанавливаем время окончания (текущее время + 37 минут)
+    const endTime = new Date();
+    endTime.setHours(hours, minutes + 37, 0);
+
+    // Форматируем время для отображения
+    const formattedTime = `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`;
+    const resultElement = document.getElementById(resultId);
+
+    // Отображаем время окончания
+    resultElement.innerHTML = `<span style="font-weight: bold;">Заспавнится в:</span> ${formattedTime}<br><span id="${resultId}-timer">Обратный отсчет: </span>`;
+    const timerElement = document.getElementById(`${resultId}-timer`);
+    resultElement.style.color = 'green';
+
+    // Таймер для обратного отсчета
+    const timerInterval = setInterval(() => {
+        const now = new Date();
+        const timeLeft = Math.floor((endTime - now) / 1000); // время в секундах
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerElement.textContent = `${name}: Время вышло!`;
+            resultElement.style.color = 'black';
+            return;
+        }
+
+        const minutesLeft = Math.floor(timeLeft / 60);
+        const secondsLeft = timeLeft % 60;
+
+        timerElement.textContent = `Обратный отсчет: ${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+
+        // Изменяем цвет, если осталось <= 10 минут
+        if (minutesLeft < 10) {
+            resultElement.style.color = 'red';
+        }
+    }, 1000);
+
+    // Создаем новый запрос с названием
+    const query = `${name}: Убил в: ${timeInput}, Заспавнится в: ${formattedTime}`;
+    previousQueries.push(query); // Добавляем в массив
+
+    // Обновляем список предыдущих запросов
+    updatePreviousRequests();
+
+    // Сохраняем запросы в локальной памяти
+    localStorage.setItem('previousQueries', JSON.stringify(previousQueries));
+}
+</script>
+
+</body>
 </html>
