@@ -87,10 +87,13 @@
             font-size: 16px;
         }
     </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
 </head>
 <body>
-
-
 
 <div class="container">
     <div class="title">Левый</div>
@@ -148,65 +151,110 @@
 </div>
 
 <script>
+    // Ваши настройки Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyD_oVQVzH97aShwlBMxCDsAuqaMX266SkQ",
+        authDomain: "sobear-97f0f.firebaseapp.com",
+        projectId: "sobear-97f0f",
+        storageBucket: "sobear-97f0f.firebasestorage.app",
+        messagingSenderId: "370290200994",
+        appId: "1:370290200994:web:75c0cf716b421d27c9e2fb",
+        measurementId: "G-BKJKNTT7VP"
+    };
+
+    // Инициализация Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
     // Массив для хранения всех предыдущих запросов
     let previousQueries = [];
 
     function addTime(name, timeInputId, resultId) {
-    const timeInput = document.getElementById(timeInputId).value;
-    if (!timeInput) {
-        alert('Пожалуйста, введите время.');
-        return;
-    }
-
-    // Время начала, которое выбрал пользователь
-    let [hours, minutes] = timeInput.split(':').map(Number);
-
-    // Устанавливаем время окончания (текущее время + 37 минут)
-    const endTime = new Date();
-    endTime.setHours(hours, minutes + 37, 0);
-
-    // Форматируем время для отображения
-    const formattedTime = `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`;
-    const resultElement = document.getElementById(resultId);
-
-    // Отображаем время окончания
-    resultElement.innerHTML = `<span style="font-weight: bold;">Заспавнится в:</span> ${formattedTime}<br><span id="${resultId}-timer">Обратный отсчет: </span>`;
-    const timerElement = document.getElementById(`${resultId}-timer`);
-    resultElement.style.color = 'green';
-
-    // Таймер для обратного отсчета
-    const timerInterval = setInterval(() => {
-        const now = new Date();
-        const timeLeft = Math.floor((endTime - now) / 1000); // время в секундах
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            timerElement.textContent = `${name}: Время вышло!`;
-            resultElement.style.color = 'black';
+        const timeInput = document.getElementById(timeInputId).value;
+        if (!timeInput) {
+            alert('Пожалуйста, введите время.');
             return;
         }
 
-        const minutesLeft = Math.floor(timeLeft / 60);
-        const secondsLeft = timeLeft % 60;
+        // Время начала, которое выбрал пользователь
+        let [hours, minutes] = timeInput.split(':').map(Number);
 
-        timerElement.textContent = `Обратный отсчет: ${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+        // Устанавливаем время окончания (текущее время + 37 минут)
+        const endTime = new Date();
+        endTime.setHours(hours, minutes + 37, 0);
 
-        // Изменяем цвет, если осталось <= 10 минут
-        if (minutesLeft < 10) {
-            resultElement.style.color = 'red';
-        }
-    }, 1000);
+        // Форматируем время для отображения
+        const formattedTime = `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`;
+        const resultElement = document.getElementById(resultId);
 
-    // Создаем новый запрос с названием
-    const query = `${name}: Убил в: ${timeInput}, Заспавнится в: ${formattedTime}`;
-    previousQueries.push(query); // Добавляем в массив
+        // Отображаем время окончания
+        resultElement.innerHTML = `<span style="font-weight: bold;">Заспавнится в:</span> ${formattedTime}<br><span id="${resultId}-timer">Обратный отсчет: </span>`;
+        const timerElement = document.getElementById(`${resultId}-timer`);
+        resultElement.style.color = 'green';
 
-    // Обновляем список предыдущих запросов
-    updatePreviousRequests();
+        // Таймер для обратного отсчета
+        const timerInterval = setInterval(() => {
+            const now = new Date();
+            const timeLeft = Math.floor((endTime - now) / 1000); // время в секундах
 
-    // Сохраняем запросы в локальной памяти
-    localStorage.setItem('previousQueries', JSON.stringify(previousQueries));
-}
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = `${name}: Время вышло!`;
+                resultElement.style.color = 'black';
+                return;
+            }
+
+            const minutesLeft = Math.floor(timeLeft / 60);
+            const secondsLeft = timeLeft % 60;
+
+            timerElement.textContent = `Обратный отсчет: ${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+
+            // Изменяем цвет, если осталось <= 10 минут
+            if (minutesLeft < 10) {
+                resultElement.style.color = 'red';
+            }
+        }, 1000);
+
+        // Создаем новый запрос с названием
+        const query = `${name}: Убил в: ${timeInput}, Заспавнится в: ${formattedTime}`;
+        previousQueries.push(query); // Добавляем в массив
+
+        // Обновляем список предыдущих запросов
+        updatePreviousRequests();
+
+        // Сохраняем запросы в локальной памяти
+        localStorage.setItem('previousQueries', JSON.stringify(previousQueries));
+
+        // Сохраняем данные в Firestore
+        db.collection('times').add({
+            name: name,
+            time: timeInput,
+            endTime: formattedTime
+        });
+    }
+
+    // Слушаем изменения в Firestore и обновляем отображение
+    db.collection('times').onSnapshot((snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+                const { name, time, endTime } = change.doc.data();
+                const query = `${name}: Убил в: ${time}, Заспавнится в: ${endTime}`;
+                previousQueries.push(query); // Добавляем в массив
+            }
+        });
+        updatePreviousRequests(); // Обновляем отображение списка
+    });
+
+    // Функция для обновления списка предыдущих запросов
+    function updatePreviousRequests() {
+        const requestList = document.getElementById('requestList');
+        requestList.innerHTML = '';
+        previousQueries.forEach((query) => {
+            const li = document.createElement('li');
+            li.textContent = query;
+            requestList.appendChild(li);
+        });
+    }
 </script>
 
 </body>
