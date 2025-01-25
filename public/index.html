@@ -108,40 +108,7 @@
     <p id="trident1Result"></p>
 </div>
 
-<div class="container">
-    <div class="title">Трезубец 2</div>
-    <input type="time" id="trident2Time">
-    <button onclick="addRequestToFirestore('Трезубец 2', 'trident2Time', 'trident2Result')">Убил!</button>
-    <p id="trident2Result"></p>
-</div>
-
-<div class="container">
-    <div class="title">Трезубец 3</div>
-    <input type="time" id="trident3Time">
-    <button onclick="addRequestToFirestore('Трезубец 3', 'trident3Time', 'trident3Result')">Убил!</button>
-    <p id="trident3Result"></p>
-</div>
-
-<div class="container">
-    <div class="title">Пётр 1</div>
-    <input type="time" id="petro1Time">
-    <button onclick="addRequestToFirestore('Пётр 1', 'petro1Time', 'petro1Result')">ДУбил!</button>
-    <p id="petro1Result"></p>
-</div>
-
-<div class="container">
-    <div class="title">Пётр 2</div>
-    <input type="time" id="petro2Time">
-    <button onclick="addRequestToFirestore('Пётр 2', 'petro2Time', 'petro2Result')">Убил!</button>
-    <p id="petro2Result"></p>
-</div>
-
-<div class="container">
-    <div class="title">Пётр 3</div>
-    <input type="time" id="petro3Time">
-    <button onclick="addRequestToFirestore('Пётр 3', 'petro3Time', 'petro3Result')">Убил!</button>
-    <p id="petro3Result"></p>
-</div>
+<!-- добавь остальные контейнеры аналогично -->
 
 <!-- Отображение предыдущих запросов -->
 <div id="previousRequests">
@@ -164,9 +131,6 @@
     // Инициализация Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore(app);
-
-    // Массив для хранения всех предыдущих запросов
-    let previousQueries = [];
 
     // Функция для добавления времени и запроса в Firestore
     function addRequestToFirestore(name, timeInputId, resultId) {
@@ -215,16 +179,6 @@
             }
         }, 1000);
 
-        // Создаем новый запрос с названием
-        const query = `${name}: Убил в: ${timeInput}, Заспавнится в: ${formattedTime}`;
-        previousQueries.push(query); // Добавляем в массив
-
-        // Обновляем список предыдущих запросов
-        updatePreviousRequests();
-
-        // Сохраняем запросы в локальной памяти
-        localStorage.setItem('previousQueries', JSON.stringify(previousQueries));
-
         // Сохраняем данные в Firestore
         db.collection('times').add({
             name: name,
@@ -243,22 +197,14 @@
             if (change.type === "added") {
                 const { name, time, endTime } = change.doc.data();
                 const query = `${name}: Убил в: ${time}, Заспавнится в: ${endTime}`;
-                previousQueries.push(query); // Добавляем в массив
+                const requestList = document.getElementById('requestList');
+                const li = document.createElement('li');
+                li.textContent = query;
+                requestList.appendChild(li);
             }
         });
-        updatePreviousRequests(); // Обновляем отображение списка
     });
 
-    // Функция для обновления списка предыдущих запросов
-    function updatePreviousRequests() {
-        const requestList = document.getElementById('requestList');
-        requestList.innerHTML = '';
-        previousQueries.forEach((query) => {
-            const li = document.createElement('li');
-            li.textContent = query;
-            requestList.appendChild(li);
-        });
-    }
 </script>
 
 </body>
